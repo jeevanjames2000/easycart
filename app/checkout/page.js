@@ -60,7 +60,7 @@ export default function CheckoutPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:3009/orders/saveProducts",
+        "https://easycartbackend.onrender.com/orders/saveProducts",
         {
           method: "POST",
           headers: {

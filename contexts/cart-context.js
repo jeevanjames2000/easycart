@@ -1,17 +1,12 @@
-// contexts/cart-context.js
 "use client";
-
 import { createContext, useContext, useReducer, useEffect } from "react";
-
 const CartContext = createContext();
-
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_ITEM":
-      // Validate payload
       if (!action.payload || !action.payload.id) {
         console.error("Invalid product in ADD_ITEM:", action.payload);
-        return state; // Return unchanged state to prevent errors
+        return state;
       }
       const existingItem = state.items.find(
         (item) => item.id === action.payload.id
@@ -30,13 +25,11 @@ const cartReducer = (state, action) => {
         ...state,
         items: [...state.items, { ...action.payload, quantity: 1 }],
       };
-
     case "REMOVE_ITEM":
       return {
         ...state,
         items: state.items.filter((item) => item.id !== action.payload),
       };
-
     case "UPDATE_QUANTITY":
       return {
         ...state,
@@ -46,27 +39,22 @@ const cartReducer = (state, action) => {
             : item
         ),
       };
-
     case "CLEAR_CART":
       return {
         ...state,
         items: [],
       };
-
     case "LOAD_CART":
       return {
         ...state,
-        items: action.payload || [], // Fallback to empty array
+        items: action.payload || [],
       };
-
     default:
       return state;
   }
 };
-
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [] });
-
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
@@ -74,15 +62,13 @@ export function CartProvider({ children }) {
         dispatch({ type: "LOAD_CART", payload: JSON.parse(savedCart) });
       } catch (error) {
         console.error("Failed to load cart from localStorage:", error);
-        dispatch({ type: "LOAD_CART", payload: [] }); // Reset to empty on error
+        dispatch({ type: "LOAD_CART", payload: [] });
       }
     }
   }, []);
-
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(state.items));
   }, [state.items]);
-
   const addItem = (product) => {
     if (!product || !product.id) {
       console.error("Invalid product passed to addItem:", product);
@@ -90,11 +76,9 @@ export function CartProvider({ children }) {
     }
     dispatch({ type: "ADD_ITEM", payload: product });
   };
-
   const removeItem = (productId) => {
     dispatch({ type: "REMOVE_ITEM", payload: productId });
   };
-
   const updateQuantity = (productId, quantity) => {
     if (quantity <= 0) {
       removeItem(productId);
@@ -105,22 +89,18 @@ export function CartProvider({ children }) {
       });
     }
   };
-
   const clearCart = () => {
     dispatch({ type: "CLEAR_CART" });
   };
-
   const getCartTotal = () => {
     return state.items.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
   };
-
   const getCartCount = () => {
     return state.items.reduce((count, item) => count + item.quantity, 0);
   };
-
   return (
     <CartContext.Provider
       value={{
@@ -137,7 +117,6 @@ export function CartProvider({ children }) {
     </CartContext.Provider>
   );
 }
-
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

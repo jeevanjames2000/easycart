@@ -37,7 +37,9 @@ export default function OrderSuccessPage() {
     const fetchLatestOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3009/orders/${encodeURIComponent(user.email)}`,
+          `https://easycartbackend.onrender.com/orders/${encodeURIComponent(
+            user.email
+          )}`,
           {
             method: "GET",
             headers: {

@@ -25,7 +25,7 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3009/orders/getAllOrdersByEmail?email=${user.email}`,
+          `https://easycartbackend.onrender.com/orders/getAllOrdersByEmail?email=${user.email}`,
           {
             method: "GET",
             headers: {
