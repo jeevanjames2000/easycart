@@ -19,11 +19,11 @@ export default function CartPage() {
           <div className="text-center space-y-4">
             <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground" />
             <h1 className="text-2xl font-bold">Your cart is empty</h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-5">
               Looks like you haven't added anything to your cart yet.
             </p>
-            <Link href="/products">
-              <Button>Continue Shopping</Button>
+            <Link href="/products" className="text-white">
+              <Button className="text-white">Continue Shopping</Button>
             </Link>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function CartPage() {
               </Card>
             ))}
             <div className="flex justify-between">
-              <Link href="/products">
+              <Link href="/products" className="text-white">
                 <Button variant="outline">Continue Shopping</Button>
               </Link>
               <Button variant="outline" onClick={clearCart}>
@@ -155,7 +155,7 @@ export default function CartPage() {
                   </div>
                 </div>
                 <Link href="/checkout" className="block">
-                  <Button className="w-full p-2" size="lg">
+                  <Button className="w-full text-white p-2" size="lg">
                     Proceed to Checkout
                   </Button>
                 </Link>

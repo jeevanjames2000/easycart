@@ -1,10 +1,8 @@
+// app/register/page.jsx
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,8 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/auth-context";
-import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -33,7 +31,6 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
-  const { toast } = useToast();
   const router = useRouter();
 
   const handleInputChange = (field, value) => {
@@ -44,20 +41,13 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
-        variant: "destructive",
-      });
+      toast.error("Please make sure your passwords match.");
       return;
     }
 
     if (!formData.agreeToTerms) {
-      toast({
-        title: "Terms required",
-        description: "Please agree to the terms and conditions.",
-        variant: "destructive",
-      });
+      toast.error("Please agree to the terms and conditions.");
+
       return;
     }
 
@@ -65,17 +55,12 @@ export default function RegisterPage() {
 
     try {
       await register(formData.name, formData.email, formData.password);
-      toast({
-        title: "Account created!",
-        description: "Welcome to EasyCart Store.",
-      });
+
+      toast.success("Welcome to EasyCart Store.");
+
       router.push("/");
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      toast.error("Please check your details and try again.");
     } finally {
       setLoading(false);
     }
@@ -158,7 +143,8 @@ export default function RegisterPage() {
                       handleInputChange("confirmPassword", e.target.value)
                     }
                     required
-                  />
+                    bl
+                  ></Input>
                   <Button
                     type="button"
                     variant="ghost"
@@ -198,7 +184,11 @@ export default function RegisterPage() {
                 </Label>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full text-white"
+                disabled={loading}
+              >
                 {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
@@ -210,7 +200,7 @@ export default function RegisterPage() {
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="font-medium text-primary hover:underline"
+                  className="font-medium text-black text-primary hover:underline"
                 >
                   Sign in
                 </Link>

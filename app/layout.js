@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +19,16 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             {children}
-            <Toaster />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 1000,
+                style: {
+                  background: "#333",
+                  color: "#fff",
+                },
+              }}
+            />
           </CartProvider>
         </AuthProvider>
       </body>

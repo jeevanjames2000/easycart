@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Heart } from "lucide-react";
@@ -7,21 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/cart-context";
-import { useToast } from "@/hooks/use-toast";
-
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 export function ProductCard({ product }) {
+  const { user, loading } = useAuth();
   const { addItem } = useCart();
-  const { toast } = useToast();
-
-  const handleAddToCart = (e) => {
+  const router = useRouter();
+  const handleAddToCart = (e, product) => {
     e.preventDefault();
+    if (loading) return;
+    if (!user) {
+      toast.error("Please log in to continue!");
+      router.push("/login");
+      return;
+    }
     addItem(product);
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+    toast.success("Added to Cart");
   };
-
   return (
     <Card className="group overflow-hidden transition-all hover:shadow-lg">
       <Link href={`/products/${product.id}`}>
@@ -62,7 +64,12 @@ export function ProductCard({ product }) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button onClick={handleAddToCart} className="w-full flex p-2" size="sm">
+        <Button
+          onClick={(e) => handleAddToCart(e, product)}
+          className="w-full text-white flex p-2"
+          size="sm"
+          disabled={loading}
+        >
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>

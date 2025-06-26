@@ -1,4 +1,6 @@
+// app/checkout/page.jsx
 "use client";
+
 import { useState } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -18,16 +20,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
-import { useToast } from "@/hooks/use-toast";
+
 import { CreditCard, Truck, Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import toast from "react-hot-toast";
+
 export default function CheckoutPage() {
   const { items, getCartTotal, clearCart } = useCart();
   const { user } = useAuth();
-  const { toast } = useToast();
+
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: user?.email || "",
-    firstName: "",
-    lastName: "",
+    firstName: user?.name?.split(" ")[0] || "",
+    lastName: user?.name?.split(" ")[1] || "",
     address: "",
     city: "",
     state: "",
@@ -42,26 +49,59 @@ export default function CheckoutPage() {
     sameAsShipping: true,
   });
   const [loading, setLoading] = useState(false);
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      toast({
-        title: "Order placed successfully!",
-        description: "You will receive a confirmation email shortly.",
-      });
+
+    try {
+      const response = await fetch(
+        "http://localhost:3009/orders/saveProducts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: `${formData.firstName} ${formData.lastName}`.trim(),
+            email: formData.email,
+            products: items.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+            totalAmount: total,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to save order");
+      }
+      localStorage.setItem("latestOrder", JSON.stringify(data.order));
+
+      toast.success("Order placed successfully!");
       clearCart();
+      router.push("/order-success");
+    } catch (error) {
+      toast.error("Order failed");
+    } finally {
       setLoading(false);
-      window.location.href = "/order-success";
-    }, 2000);
+    }
   };
+
   const subtotal = getCartTotal();
   const shipping = subtotal > 100 ? 0 : 10;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
@@ -73,7 +113,9 @@ export default function CheckoutPage() {
               Add some items to your cart before checking out.
             </p>
             <Button asChild>
-              <a href="/products">Continue Shopping</a>
+              <Link href="/products" className="text-white">
+                Continue Shopping
+              </Link>
             </Button>
           </div>
         </div>
@@ -81,6 +123,7 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -91,9 +134,7 @@ export default function CheckoutPage() {
         </div>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {}
             <div className="space-y-6">
-              {}
               <Card>
                 <CardHeader>
                   <CardTitle>Contact Information</CardTitle>
@@ -113,7 +154,6 @@ export default function CheckoutPage() {
                   </div>
                 </CardContent>
               </Card>
-              {}
               <Card>
                 <CardHeader>
                   <CardTitle>Shipping Address</CardTitle>
@@ -219,7 +259,6 @@ export default function CheckoutPage() {
                   </div>
                 </CardContent>
               </Card>
-              {}
               <Card>
                 <CardHeader>
                   <CardTitle>Payment Method</CardTitle>
@@ -307,14 +346,12 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
             </div>
-            {}
             <div>
               <Card className="sticky top-8">
                 <CardHeader>
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {}
                   <div className="space-y-3">
                     {items.map((item) => (
                       <div key={item.id} className="flex justify-between">
@@ -331,7 +368,6 @@ export default function CheckoutPage() {
                     ))}
                   </div>
                   <Separator />
-                  {}
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
@@ -355,7 +391,7 @@ export default function CheckoutPage() {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full p-2"
+                    className="w-full p-2 text-white"
                     size="lg"
                     disabled={loading}
                   >
@@ -363,7 +399,6 @@ export default function CheckoutPage() {
                       ? "Processing..."
                       : `Complete Order - $${total.toFixed(2)}`}
                   </Button>
-                  {}
                   <div className="space-y-2 text-center text-sm text-muted-foreground">
                     <div className="flex items-center justify-center gap-2">
                       <Shield className="h-4 w-4" />

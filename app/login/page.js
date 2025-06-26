@@ -1,10 +1,9 @@
+// app/login/page.jsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/auth-context";
-import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -26,7 +25,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const { toast } = useToast();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -35,17 +33,12 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      toast({
-        title: "Welcome back!",
-        description: "You have been successfully logged in.",
-      });
+
+      toast.success("You have been successfully logged in.");
+
       router.push("/");
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
+      toast.error("Please check your credentials and try again.");
     } finally {
       setLoading(false);
     }
@@ -105,13 +98,17 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-muted-foreground hover:underline"
+                  className="text-sm text-white text-muted-foreground hover:underline"
                 >
                   Forgot password?
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full text-white"
+                disabled={loading}
+              >
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
@@ -119,11 +116,11 @@ export default function LoginPage() {
             <Separator className="my-6" />
 
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-black text-muted-foreground">
                 Don't have an account?{" "}
                 <Link
                   href="/register"
-                  className="font-medium text-primary hover:underline"
+                  className="font-medium text-black text-primary hover:underline"
                 >
                   Sign up
                 </Link>

@@ -1,60 +1,73 @@
-"use client"
-import { createContext, useContext, useState, useEffect } from "react"
-const AuthContext = createContext()
+// contexts/auth-context.js
+"use client";
+
+import { createContext, useContext, useState, useEffect } from "react";
+
+const AuthContext = createContext();
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null); // Initialize as null for SSR consistency
+  const [loading, setLoading] = useState(true); // Add loading state
+
   useEffect(() => {
-    const savedUser = localStorage.getItem("user")
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-    }
-    setLoading(false)
-  }, [])
+    // Load user from localStorage after mount (client-side only)
+    const storedUser = localStorage.getItem("user");
+    setUser(storedUser ? JSON.parse(storedUser) : null);
+    setLoading(false); // Set loading to false after user is resolved
+  }, []);
+
   const login = async (email, password) => {
-    const mockUser = {
-      id: 1,
-      email,
-      name: "John Doe",
-      avatar: "/placeholder.svg?height=40&width=40",
+    try {
+      const response = await fetch("http://localhost:3009/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error;
     }
-    setUser(mockUser)
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    return mockUser
-  }
+  };
+
   const register = async (name, email, password) => {
-    const mockUser = {
-      id: 1,
-      email,
-      name,
-      avatar: "/placeholder.svg?height=40&width=40",
+    try {
+      const response = await fetch("http://localhost:3009/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error;
     }
-    setUser(mockUser)
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    return mockUser
-  }
+  };
+
   const logout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
-  }
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-  return context
-}
+
+export const useAuth = () => useContext(AuthContext);

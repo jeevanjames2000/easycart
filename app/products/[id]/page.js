@@ -20,7 +20,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useCart } from "@/contexts/cart-context";
-import { useToast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 
 async function getProduct(id) {
   try {
@@ -99,7 +99,6 @@ export default function ProductPage({ params: paramsPromise }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
-  const { toast } = useToast();
 
   // Fetch product data client-side
   useEffect(() => {
@@ -115,10 +114,8 @@ export default function ProductPage({ params: paramsPromise }) {
     for (let i = 0; i < quantity; i++) {
       addItem(product);
     }
-    toast({
-      title: "Added to cart",
-      description: `${quantity} ${product.name}(s) added to your cart.`,
-    });
+
+    toast.success("Added to cart");
   };
 
   const handleQuantityChange = (change) => {

@@ -90,7 +90,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/shipping"
+                  href="/orders"
                   className="text-muted-foreground hover:text-foreground"
                 >
                   Shipping Info
