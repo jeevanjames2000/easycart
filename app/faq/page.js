@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
+import Link from "next/link";
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-background py-16">

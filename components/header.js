@@ -78,7 +78,7 @@ export function Header() {
             About
           </Link>
           <Link
-            href="/contact-us"
+            href="/contact"
             className="transition-colors hover:text-foreground/80"
           >
             Contact

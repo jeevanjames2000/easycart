@@ -75,13 +75,6 @@ export default function ProfilePage() {
               asChild
               className="w-full hover:bg-accent hover:text-accent-foreground"
             >
-              <Link href="/profile/edit">Edit Profile</Link>
-            </Button>
-            <Button
-              variant="outline"
-              asChild
-              className="w-full hover:bg-accent hover:text-accent-foreground"
-            >
               <Link href="/orders">View Orders</Link>
             </Button>
             <Button variant="outline" onClick={handleLogout} className="w-full">
