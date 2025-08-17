@@ -65,12 +65,12 @@ export function Header() {
           >
             Products
           </Link>
-          <Link
+          {/* <Link
             href="/categories"
             className="transition-colors hover:text-foreground/80"
           >
             Categories
-          </Link>
+          </Link> */}
           <Link
             href="/about"
             className="transition-colors hover:text-foreground/80"
